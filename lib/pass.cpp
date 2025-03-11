@@ -388,14 +388,13 @@ struct HoistAnticipatedExpressions
           Function *ExpFunc = F.getParent()->getFunction("exp");
           newInst = Builder.CreateCall(ExpFunc, op1, hoistedName);
         } else {
+          // Remove the NSW flag by not explicitly setting it
           newInst =
               Builder.CreateBinOp(static_cast<Instruction::BinaryOps>(opcode),
                                   op1, op2, hoistedName);
         }
 
-        if (BinaryOperator *binOp = dyn_cast<BinaryOperator>(newInst)) {
-          binOp->setHasNoSignedWrap(true);
-        }
+        // Removed the setHasNoSignedWrap(true) line
 
         HoistedExpressions[expr] = newInst;
         outs() << "Created new instruction: " << *newInst << "\n";
